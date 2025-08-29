@@ -1,2 +1,2 @@
-git clone https://github.com/VuHuuDo/archmocha.git
+git clone https://github.com/vuhuudo/archmocha.git
 ./archmocha/setup-script/run.sh
