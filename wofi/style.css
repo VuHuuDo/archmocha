@@ -1,0 +1,166 @@
+/* ╔═══════════════════════════════════════════════════════╗
+   ║  Wofi Neon Sakura Cyberpunk Glass – Clean Edition     ║
+   ╚═══════════════════════════════════════════════════════╝ */
+
+/* ==== Giao diện chung ==== */
+* {
+  border: none;
+  border-radius: 16px;
+  padding: 0;
+  font-family: "JetBrainsMono Nerd Font", "Noto Sans", "FontAwesome", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #f8fcff;
+  text-shadow: 0 0 4px #1a104655, 0 0 1px #b3faff55;
+}
+
+/* ==== Window Glass ==== */
+window {
+  background: linear-gradient(133deg, rgba(19,23,30,0.97) 63%, rgba(46,14,54,0.93) 100%);
+  border: 2.5px solid #b3faff;
+  border-radius: 20px;
+  margin: 8px;
+  box-shadow: 0 0 36px 6px #b3faff22, 0 0 120px 0 #ffb7e622 inset;
+}
+
+/* ==== Input Box ==== */
+#input {
+  background: linear-gradient(125deg, rgba(30,40,60,0.88) 75%, rgba(179,250,255,0.09) 100%);
+  border: 2px solid #b3faff;
+  color: #fafdff;
+  border-radius: 13px;
+  padding: 10px 22px;
+  font-size: 17px;
+  font-weight: 800;
+  margin: 18px 16px 18px 16px;
+  box-shadow: 0 0 12px 3px #b3faff13;
+  outline: none;
+}
+#input:focus {
+  border-color: #ffb7e6;
+  box-shadow: 0 0 24px 6px #ffb7e625;
+}
+
+/* ==== Danh sách Entry ==== */
+#list {
+  background: none;
+  border-radius: 14px;
+  padding: 8px 8px 5px 8px;
+}
+
+/* ==== Mỗi Entry ==== */
+#entry {
+  background: linear-gradient(135deg, #191a25 68%, #24174a 100%);
+  border: 2px solid;
+  margin: 7px 10px;
+  padding: 10px 21px;
+  border-radius: 16px;
+  color: #bbf7fa;
+  font-weight: 700;
+  font-size: 15px;
+  box-shadow: 0 0 8px 1px #b3faff16;
+  text-shadow: 0 0 4px #b3faff20;
+}
+#entry:selected {
+  background: linear-gradient(135deg, rgba(255,183,230,0.18) 60%, rgba(179,250,255,0.20) 100%);
+  border-color: #ffb7e6;
+  color: #ffb7e6;
+  box-shadow: 0 0 18px 2px #ffb7e644, 0 0 0 2px #b3faff29 inset;
+}
+#entry:active {
+  background: linear-gradient(135deg, #ffb7e6 0%, #ffdff2 15%, #b3faff 80%, #ffb7e6 100%);
+  color: #181a24;
+  border-color: #f5e87b;
+  text-shadow: 0 0 8px #f5e87b60;
+}
+
+/* ==== Icon app (chỉ PNG/SVG) ==== */
+#icon {
+  margin-right: 14px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(179,250,255,0.13) 70%, rgba(255,183,230,0.08) 100%);
+  border: 1.3px solid;
+  box-shadow: 0 0 5px 0 #b3faff20;
+}
+#entry:selected #icon, #entry:active #icon {
+  border-color: #ffb7e6;
+  box-shadow: 0 0 8px 1.5px #ffb7e635;
+  background: linear-gradient(135deg, rgba(255,183,230,0.13) 60%, rgba(179,250,255,0.15) 100%);
+}
+
+/* ==== Tên app nổi bật ==== */
+#text {
+  font-weight: 800;
+  color: #f5e87b;
+  text-shadow: 0 0 8px #b3faff18, 0 0 2px #ffdff2;
+}
+
+/* ==== Mô tả app ==== */
+#desc {
+  color: #bbf7fa;
+  font-size: 13px;
+  font-style: italic;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  opacity: 0.70;
+}
+
+/* ==== Button ==== */
+button, #button {
+  background: linear-gradient(135deg, #181a24 35%, #1a1046 100%);
+  border: 2px solid #b3faff;
+  color: #bbf7fa;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 15px;
+  margin: 14px 18px;
+  padding: 8px 26px;
+  box-shadow: 0 0 6px 0 #b3faff2a, 0 0 0 2px #ffb7e610 inset;
+}
+button:focus, #button:focus, button:hover, #button:hover {
+  background: linear-gradient(135deg, rgba(255,183,230,0.13) 40%, rgba(179,250,255,0.18) 100%);
+  border-color: #ffb7e6;
+  color: #ffb7e6;
+  box-shadow: 0 0 10px 0 #ffb7e644, 0 0 0 2px #b3faff18 inset;
+  text-shadow: 0 0 6px #ffb7e655;
+}
+
+/* ==== Scrollbar ==== */
+scrollbar, scrollbar slider {
+  background: transparent;
+  border-radius: 11px;
+}
+scrollbar slider {
+  background: linear-gradient(135deg, #b3faff 50%, #ffb7e6 100%);
+  opacity: 0.38;
+  border-radius: 11px;
+}
+
+/* ==== Notification ==== */
+#notification {
+  background: linear-gradient(135deg, rgba(19,23,30,0.98) 70%, rgba(46,14,54,0.91) 100%);
+  border: 2px solid #b3faff;
+  border-radius: 14px;
+  color: #ffb7e6;
+  font-size: 15px;
+  font-weight: 800;
+  padding: 14px 28px;
+  box-shadow: 0 0 13px 1.5px #b3faff18;
+}
+#notification.critical {
+  border-color: #ffb7e6;
+  color: #f5e87b;
+  background: linear-gradient(135deg, rgba(255,183,230,0.11) 45%, rgba(245,232,123,0.11) 100%);
+}
+#notification label {
+  color: inherit;
+  font-weight: 700;
+}
+
+/* ==== Icon PNG thủ công (image widget) ==== */
+image, #image {
+  border-radius: 7px;
+  margin-right: 8px;
+  box-shadow: 0 0 8px 0 #b3faff21, 0 0 4px 0 #ffb7e620 inset;
+  background: transparent;
+}
