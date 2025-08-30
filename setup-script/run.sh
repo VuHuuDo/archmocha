@@ -19,6 +19,7 @@ declare -a REQUIRED_FILES=(
   "services.sh"
   "extras.sh"
   "pkgs.sh"
+  "autoconfig.sh"
 )
 
 # Source all required files with error checking
@@ -115,6 +116,9 @@ main() {
 
   # Enable required services
   enable_services
+
+  # Auto override config folder
+  autoconfig
 
   log SUCCESS "Hyprland setup completed successfully! Please reboot and start Hyprland."
 }
