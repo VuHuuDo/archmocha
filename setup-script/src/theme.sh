@@ -98,29 +98,41 @@ EOF
 
 auto_set_grub_theme() {
   log INFO "Starting auto setup for GRUB CyberRe theme..."
-  # Check and install git if not present (kept for potential needs, but not used here)
   if ! command -v git &>/dev/null; then
     log INFO "Installing git..."
     sudo pacman -Syu --noconfirm git &
-    local pid=$!
+    pid=$!
     spinner $pid "Installing git..."
     wait $pid || { log ERROR "Failed to install git!"; return 1; }
   fi
-  # Install CyberRe GRUB theme via AUR
-  log INFO "Installing GRUB CyberRe theme via AUR..."
-  paru -S --noconfirm grub-theme-cyberre &
-  local pid=$!
-  spinner $pid "Installing GRUB CyberRe theme..."
-  wait $pid || { log ERROR "Failed to install GRUB CyberRe theme!"; return 1; }
-  # Configure /etc/default/grub to use CyberRe
+  local theme_dir=$(sudo -u "$USER_NAME" mktemp -d /tmp/grub-theme-cyberre.XXXXXX) || { log ERROR "Failed to create temp dir!"; return 1; }
+  trap "rm -rf '$theme_dir'" RETURN
+  log INFO "Cloning GRUB CyberRe theme from AUR..."
+  sudo -u "$USER_NAME" git clone https://aur.archlinux.org/grub-theme-cyberre.git "$theme_dir" &
+  pid=$!
+  spinner $pid "Cloning theme repository..."
+  wait $pid || { log ERROR "Failed to clone!"; return 1; }
+  pushd "$theme_dir" >/dev/null || { log ERROR "Failed to cd!"; return 1; }
+  log INFO "Building theme..."
+  sudo -u "$USER_NAME" HOME="$USER_HOME" makepkg -s --noconfirm &
+  pid=$!
+  spinner $pid "Building theme..."
+  wait $pid || { log ERROR "Failed to build!"; popd >/dev/null; return 1; }
+  log INFO "Refreshing sudo credentials..."
+  sudo -v
+  log INFO "Installing built theme..."
+  sudo pacman -U --noconfirm *.pkg.tar.zst &
+  pid=$!
+  spinner $pid "Installing theme..."
+  wait $pid || { log ERROR "Failed to install!"; popd >/dev/null; return 1; }
+  popd >/dev/null
   log INFO "Configuring GRUB to use CyberRe theme..."
-  sudo sed -i 's/^GRUB_THEME=.*/GRUB_THEME="\/usr\/share\/grub\/themes\/cyberre\/theme.txt"/' /etc/default/grub ||
-  sudo echo 'GRUB_THEME="/usr/share/grub/themes/cyberre/theme.txt"' >> /etc/default/grub
-  # Update GRUB config
+  sudo sed -i '/^GRUB_THEME=/d' /etc/default/grub
+  echo 'GRUB_THEME="/usr/share/grub/themes/cyberre/theme.txt"' | sudo tee -a /etc/default/grub >/dev/null
   sudo grub-mkconfig -o /boot/grub/grub.cfg &
-  local pid=$!
+  pid=$!
   spinner $pid "Updating GRUB config..."
-  wait $pid || { log ERROR "Failed to update GRUB config!"; return 1; }
+  wait $pid || { log ERROR "Failed to update GRUB!"; return 1; }
   log SUCCESS "GRUB CyberRe theme installed! Reboot to apply."
   return 0
 }
