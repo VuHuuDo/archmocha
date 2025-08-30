@@ -97,35 +97,50 @@ EOF
 }
 
 auto_set_grub_theme() {
+  # Log the start of the theme setup process
   log INFO "Starting auto setup for GRUB Vimix theme..."
-  Check and install git if not present
+  # Check if git is installed; install if missing
   if ! command -v git &>/dev/null; then
+    # Log git installation start
     log INFO "Installing git..."
+    # Run pacman to install git non-interactively
     sudo pacman -Syu --noconfirm git &
-    local pid=$!
+    # Capture PID for spinner
+    pid=$!
+    # Show spinner during installation
     spinner $pid "Installing git..."
+    # Wait for process and handle failure
     wait $pid || { log ERROR "Failed to install git!"; return 1; }
   fi
-  Clone and install GRUB Vimix theme
-  log INFO "Cloning and installing GRUB Vimix theme..."
-  Prepare temporary directory using mktemp for safety
-  local grub_dir
-  grub_dir=$(mktemp -d /tmp/grub2-themes.XXXXXX) || { log ERROR "Failed to create temporary directory for GRUB themes!"; return 1; }
-  trap "rm -rf '$grub_dir'" RETURN # Ensure cleanup on function return
-  Clone the repo (as root since install requires sudo)
-  git clone https://github.com/vinceliuice/grub2-themes.git "$grub_dir" &
-  local pid=$!
-  spinner $pid "Cloning GRUB themes repository..."
-  wait $pid || { log ERROR "Failed to clone GRUB themes repository!"; return 1; }
-  Change into the directory
-  pushd "$grub_dir" >/dev/null || { log ERROR "Failed to change directory to $grub_dir!"; return 1; }
-  Install the theme with sudo
+  # Create a temporary directory as user for cloning
+  local theme_dir=$(sudo -u "$USER_NAME" mktemp -d /tmp/grub2-themes.XXXXXX) || { log ERROR "Failed to create temp dir!"; return 1; }
+  # Set trap to clean up temp dir on return
+  trap "rm -rf '$theme_dir'" RETURN
+  # Log cloning process
+  log INFO "Cloning GRUB Vimix theme repository..."
+  # Clone the repo as user
+  sudo -u "$USER_NAME" git clone https://github.com/vinceliuice/grub2-themes.git "$theme_dir" &
+  # Capture PID
+  pid=$!
+  # Spinner for cloning
+  spinner $pid "Cloning theme repository..."
+  # Wait and handle clone failure
+  wait $pid || { log ERROR "Failed to clone!"; return 1; }
+  # Change to the cloned directory
+  pushd "$theme_dir" >/dev/null || { log ERROR "Failed to cd!"; return 1; }
+  # Log theme installation
+  log INFO "Installing Vimix theme..."
+  # Run install script with sudo for Vimix theme, color icons, 1080p resolution
   sudo ./install.sh -t vimix -i color -s 1080p &
-  local pid=$!
-  spinner $pid "Installing GRUB Vimix theme..."
-  wait $pid || { log ERROR "Failed to install GRUB Vimix theme!"; popd >/dev/null; return 1; }
-  Exit directory
+  # Capture PID
+  pid=$!
+  # Spinner for installation
+  spinner $pid "Installing Vimix theme..."
+  # Wait and handle install failure, pop directory on error
+  wait $pid || { log ERROR "Failed to install!"; popd >/dev/null; return 1; }
+  # Return to previous directory
   popd >/dev/null
+  # Log success
   log SUCCESS "GRUB Vimix theme installed! Reboot to apply."
   return 0
 }
