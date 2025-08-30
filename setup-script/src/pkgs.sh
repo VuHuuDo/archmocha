@@ -13,7 +13,7 @@ PKGS=(
 "efibootmgr" # Quản lý EFI boot entries; cách dùng: sudo efibootmgr -c để tạo entry mới. Mẹo: Sử dụng efibootmgr -v để xem chi tiết entries. Conflicts: Yêu cầu EFI mode, không hoạt động trên legacy BIOS.
 "dosfstools" # Tool tạo/sửa phân vùng FAT/EFI; cách dùng: sudo mkfs.fat -F32 /dev/sdX1. Mẹo: Sử dụng với -n để đặt label EFI. Conflicts: Không xung đột lớn, nhưng cẩn thận không format nhầm phân vùng.
 "os-prober" # Phát hiện OS khác cho dualboot; cách dùng: tự động khi chạy grub-mkconfig. Mẹo: Mount các phân vùng OS khác trước khi chạy để detect chính xác. Conflicts: Có thể không detect nếu filesystem lạ hoặc encrypted.
-"mtools" # Tool thao tác file MS-DOS/FAT; cách dùng: mcopy để copy file vào FAT. Mẹo: Hữu ích cho bootable USB. Conflicts: Ít xung đột, nhưng không hỗ trợ NTFS.
+"mtools" # Tool thao tác file MS-DOS/FAT; cách dùng: mcopy để copy file vào FAT. Mẹo: Hữu ích cho bootable USB. Conflicts: Ít dùng, nhưng không hỗ trợ NTFS.
 "base-devel" # Bộ công cụ build gói (gcc, make,...), bắt buộc cho AUR; cách dùng: makepkg để build. Mẹo: Cài sớm để tránh lỗi khi build AUR. Conflicts: Có thể xung đột nếu bạn dùng chroot build, nhưng thường an toàn.
 "git" # Quản lý mã nguồn, clone repo; cách dùng: git clone URL. Mẹo: Thiết lập git config --global user.name/email để commit. Conflicts: Không xung đột, nhưng cần ssh-key cho private repo.
 "cmake" # Công cụ build cross-platform cho dự án C/C++; cách dùng: cmake -S . -B build, sau đó cmake --build build. Mẹo: Sử dụng ccmake cho giao diện config GUI, và -DCMAKE_BUILD_TYPE=Release cho optimize. Conflicts: Có thể xung đột với phiên bản cài từ source nếu không gỡ sạch, hoặc với make nếu config sai.
@@ -24,12 +24,19 @@ PKGS=(
 "wget" # Tải file từ web; cách dùng: wget URL. Mẹo: Sử dụng -c để resume download. Conflicts: Không xung đột, nhưng curl linh hoạt hơn cho API.
 "curl" # Tải file/API qua https; cách dùng: curl -O URL. Mẹo: Sử dụng -L để follow redirect. Conflicts: Không xung đột, nhưng cần ca-certificates cho https.
 "bash-completion" # Tự động hoàn thành lệnh bash; cách dùng: tự động khi gõ tab. Mẹo: Source /etc/profile sau cài. Conflicts: Có thể xung đột với zsh nếu switch shell.
+"linux-headers" # Kernel headers cần cho build module/driver; cách dùng: tự động cho dkms. Mẹo: Khớp phiên bản kernel hiện tại. Conflicts: Xung đột nếu kernel update mà không reinstall headers.
+"ninja" # Build system nhanh, thường dùng với meson/cmake; cách dùng: ninja -C build. Mẹo: Parallel build với -j cores. Conflicts: Không xung đột lớn.
+"python" # Ngôn ngữ lập trình, cần cho nhiều script/tool; cách dùng: python script.py. Mẹo: Virtualenv cho isolate. Conflicts: Xung đột nếu cài python2 legacy.
 
 # GRAPHICS DRIVERS, NVIDIA - Các gói driver NVIDIA proprietary cho hỗ trợ GPU acceleration trên Wayland/Hyprland. Mẹo: Reboot sau khi cài và blacklist nouveau để tránh lỗi render. Conflicts: Xung đột với driver mã mở như nouveau hoặc phiên bản beta/legacy.
 "nvidia" # Driver kernel module NVIDIA proprietary cho GeForce 8 series trở lên; cách dùng: tự động load sau cài, kiểm tra bằng nvidia-smi. Mẹo: Sử dụng cho kernel linux chuẩn, kết hợp với env variables trong hyprland.conf cho Wayland. Conflicts: Xung đột với nvidia-dkms (nếu dùng kernel custom thì dùng dkms thay thế), nouveau (blacklist trong /etc/modprobe.d).
 "nvidia-utils" # Công cụ và thư viện user-space cho driver NVIDIA; cách dùng: nvidia-smi để monitor GPU, nvidia-settings để cấu hình. Mẹo: Tích hợp với waybar module cho hiển thị GPU usage. Conflicts: Có thể xung đột với phiên bản beta hoặc legacy driver, yêu cầu khớp phiên bản với nvidia.
 "libva-nvidia-driver" # Implementation VA-API sử dụng NVDEC backend cho hardware video decode; cách dùng: tự động cho app như mpv hoặc ffmpeg với --hwdec=vaapi. Mẹo: Cải thiện playback video mượt mà trên NVIDIA, kiểm tra bằng vainfo. Conflicts: Yêu cầu NVIDIA driver series 515+, có thể xung đột nếu dùng backend khác như vdpau.
 "egl-wayland" # Thư viện EGL external platform cho Wayland trên NVIDIA; cách dùng: tự động fix EGL issues trong compositor Wayland. Mẹo: Bắt buộc cho Hyprland/Kitty trên NVIDIA để tránh lỗi render offscreen. Conflicts: Không xung đột lớn, nhưng đảm bảo phiên bản driver NVIDIA tương thích (495+).
+"mesa" # Driver đồ họa mã mở cho Intel/AMD, fallback cho NVIDIA; cách dùng: tự động cho OpenGL/Vulkan. Mẹo: Set env MESA_LOADER_DRIVER_OVERRIDE cho override. Conflicts: Xung đột nếu dùng proprietary driver hoàn toàn, nhưng cần cho hybrid GPU.
+"libdrm" # Thư viện Direct Rendering Manager cho GPU access; cách dùng: tự động cho Hyprland/mesa. Mẹo: Cập nhật để fix bug render. Conflicts: Không xung đột, nhưng yêu cầu kernel mới.
+"vulkan-icd-loader" # Loader cho Vulkan driver (Intel/AMD/NVIDIA); cách dùng: tự động cho app Vulkan. Mẹo: Kiểm tra vulkaninfo. Conflicts: Xung đột nếu driver không khớp (e.g., nvidia-utils).
+"opengl-driver" # Driver OpenGL chung (kéo mesa hoặc proprietary); cách dùng: tự động. Mẹo: Cho game/app 3D. Conflicts: Chọn đúng cho hardware.
 
 # FONT, ICON, CURSOR: Catppuccin Sakura Neon Pastel - Các gói liên quan đến font, icon và cursor với theme pastel neon. Mẹo: Chạy fc-cache -fv sau cài font để update cache. Conflicts: Theme GTK có thể không khớp nếu dùng Qt app; sử dụng kvantum để đồng bộ.
 "ttf-jetbrains-mono-nerd" # Font code chính, hỗ trợ icon Nerd Font cho terminal/waybar; cách dùng: chọn trong kitty.conf hoặc ~/.config/waybar/config. Mẹo: Lý tưởng cho coding với ligatures. Conflicts: Không xung đột, nhưng cần Nerd Font patcher nếu custom.
@@ -42,6 +49,7 @@ PKGS=(
 "breeze-icons" # Icon fallback KDE/Qt; cách dùng: tự động cho app Qt. Mẹo: Tốt cho app KDE. Conflicts: Không xung đột.
 "hicolor-icon-theme" # Icon base fallback; cách dùng: tự động. Mẹo: Bắt buộc cho icon system. Conflicts: Không xung đột.
 "ttf-font-awesome" # Font icon phổ biến cho UI và Waybar (bổ sung để hỗ trợ thêm biểu tượng trong thanh bar và launcher); cách dùng: tự động fallback trong các app hỗ trợ Nerd Fonts. Mẹo: Kết hợp với Nerd Fonts cho waybar modules. Conflicts: Có thể chồng chéo với nerd-fonts nếu cài đầy đủ.
+"ttf-nerd-fonts-symbols" # Biểu tượng Nerd Fonts đầy đủ cho ricing (bổ sung để hỗ trợ icon trong waybar, terminal); cách dùng: tự động cho app hỗ trợ. Mẹo: Chọn variant mono cho space saving. Conflicts: Dung lượng lớn nếu cài full set.
 
 # Input Method - Các gói cho bộ gõ tiếng Việt và input method. Mẹo: Thêm env GTK_IM_MODULE=fcitx5 vào hyprland.conf để tích hợp. Conflicts: Xung đột với ibus nếu cài song song; chọn một IM duy nhất.
 "fcitx5" # Nhân bộ gõ Fcitx5; cách dùng: fcitx5 để chạy. Mẹo: Chạy daemon với fcitx5 -d. Conflicts: Cần restart session sau cài.
@@ -50,6 +58,7 @@ PKGS=(
 "fcitx5-gtk" # Hỗ trợ GTK app (VSCode, Firefox); cách dùng: tự động. Mẹo: Set env cho app cụ thể nếu lỗi. Conflicts: Không xung đột.
 "fcitx5-qt" # Hỗ trợ Qt app (Telegram); cách dùng: tự động. Mẹo: Tương tự GTK. Conflicts: Không xung đột.
 "fcitx5-lua" # Hỗ trợ extension Lua; cách dùng: viết script Lua cho Fcitx5. Mẹo: Dùng cho custom macro. Conflicts: Không xung đột.
+"libinput" # Thư viện xử lý input (keyboard/mouse/touchpad); cách dùng: tự động cho Hyprland. Mẹo: Cấu hình gesture trong hyprland.conf. Conflicts: Xung đột với evdev nếu dùng X11 legacy.
 
 # HYPRLAND CORE, TOOLKIT, PORTAL - Các gói cốt lõi cho Hyprland WM và hỗ trợ Wayland. Mẹo: Build Hyprland từ git nếu cần feature mới. Conflicts: Xung đột với NVIDIA driver cũ; dùng nouveau hoặc proprietary mới.
 "hyprland" # WM Wayland nhẹ, hiệu ứng đẹp; cách dùng: exec Hyprland trong ~/.xinitrc hoặc display manager. Mẹo: Bind key trong conf cho productivity. Conflicts: Không chạy tốt trên VM thiếu GPU accel.
@@ -65,7 +74,26 @@ PKGS=(
 "xdg-desktop-portal-wlr" # Portal cho WM khác; cách dùng: tự động. Mẹo: Fallback. Conflicts: Không xung đột.
 "xorg-xwayland" # Chạy app X11 trên Wayland; cách dùng: tự động. Mẹo: Set env để force Wayland. Conflicts: Có thể gây lỗi scale trên high DPI.
 "hypridle" # Quản lý idle cho Hyprland (bổ sung để tự động khóa màn hình khi idle, tương tự swayidle nhưng tích hợp tốt hơn với Hyprland); cách dùng: hypridle & trong hyprland.conf, chỉnh ~/.config/hypr/hypridle.conf. Mẹo: Set timeout hợp lý để tiết kiệm pin. Conflicts: Xung đột với swayidle nếu chạy cùng.
-"hyprpicker" # Color picker cho Wayland (bổ sung để chọn màu từ màn hình, hữu ích cho ricing và thiết kế); cách dùng: hyprpicker -a để copy màu vào clipboard. Mẹo: Bind key cho quick access. Conflicts: Không xung đột.
+"hyprpicker" # Color picker cho Wayland (bổ sung để chọn màu từ màn hình, hữu ích cho chọn màu ricing và thiết kế); cách dùng: hyprpicker -a để copy màu vào clipboard. Mẹo: Bind key cho quick access. Conflicts: Không xung đột.
+"aquamarine" # Thư viện rendering cho Hyprland; cách dùng: tự động. Mẹo: Cải thiện hiệu suất render. Conflicts: Không xung đột, dep của hyprland.
+"cairo" # Thư viện vẽ 2D; cách dùng: tự động cho UI. Mẹo: Vector graphics. Conflicts: Không xung đột.
+"glib2" # Core app libs; cách dùng: tự động. Mẹo: GObject system. Conflicts: Không xung đột.
+"glslang" # Shader compiler; cách dùng: tự động cho Vulkan. Mẹo: GLSL to SPIR-V. Conflicts: Không xung đột.
+"hyprlang" # Ngôn ngữ config cho Hyprland; cách dùng: tự động cho conf. Mẹo: Syntax highlight. Conflicts: Không xung đột.
+"libdisplay-info" # Info display EDID; cách dùng: tự động cho monitors. Mẹo: Detect resolution. Conflicts: Không xung đột.
+"libliftoff" # Layer allocation lib; cách dùng: tự động cho compositor. Mẹo: Optimize planes. Conflicts: Không xung đột.
+"libxcomposite" # X11 composite; cách dùng: tự động cho XWayland. Mẹo: Transparency. Conflicts: Không xung đột.
+"libxfixes" # X11 fixes; cách dùng: tự động. Mẹo: Bug fixes. Conflicts: Không xung đột.
+"libxkbcommon" # Keyboard handling; cách dùng: tự động cho input. Mẹo: Layout switch. Conflicts: Không xung đột.
+"libxkbcommon-x11" # X11 support cho xkb; cách dùng: tự động cho XWayland. Mẹo: Legacy app. Conflicts: Không xung đột.
+"libxrender" # X11 render; cách dùng: tự động. Mẹo: Anti-aliasing. Conflicts: Không xung đột.
+"pango" # Text layout; cách dùng: tự động cho fonts. Mẹo: Unicode render. Conflicts: Không xung đột.
+"pixman" # Pixel manipulation; cách dùng: tự động cho cairo. Mẹo: Low-level graphics. Conflicts: Không xung đột.
+"polkit" # Authorization framework; cách dùng: tự động cho privilege. Mẹo: Rules in /etc/polkit-1. Conflicts: Không xung đột.
+"seatd" # Seat manager minimal; cách dùng: tự động cho Hyprland. Mẹo: Launch with seatd-launch. Conflicts: Xung đột logind nếu config sai.
+"systemd-libs" # Core systemd libs; cách dùng: tự động. Mẹo: Journalctl. Conflicts: Không xung đột.
+"wayland" # Core Wayland protocol; cách dùng: tự động cho compositor. Mẹo: Env WAYLAND_DISPLAY. Conflicts: Không xung đột.
+"xcb-proto" # XCB protocols; cách dùng: tự động cho build. Mẹo: XML defs. Conflicts: Không xung đột.
 
 # BAR, LAUNCHER, NOTIFY, CLIPBOARD, THEME - Các gói cho thanh bar, launcher, thông báo và clipboard. Mẹo: Custom CSS cho waybar để ricing. Conflicts: Dunst có thể xung đột với mako nếu dùng Sway.
 "waybar" # Thanh bar Wayland, ricing mạnh; cách dùng: waybar & trong hyprland.conf, chỉnh ~/.config/waybar/config. Mẹo: Thêm modules custom. Conflicts: Cần font nerd cho icon.
@@ -170,6 +198,7 @@ PKGS=(
 "shotcut" # Video editor nhẹ; cách dùng: shotcut. Mẹo: Timeline. Conflicts: Không xung đột.
 "kdenlive" # Video editor mạnh; cách dùng: kdenlive. Mẹo: Effect. Conflicts: Không xung đột.
 "obs-studio" # Quay màn/livestream; cách dùng: obs. Mẹo: Wayland capture. Conflicts: Cần portal.
+"ffmpeg" # Công cụ xử lý video/audio; cách dùng: ffmpeg -i input output. Mẹo: Encode/decode. Conflicts: Không xung đột, dep cho nhiều app.
 
 # DISPLAY, MIRACAST, WAYLAND UTILITY - Các gói quản lý hiển thị và tiện ích Wayland. Mẹo: Wlr-randr cho scale. Conflicts: Multi-monitor cần config Hyprland.
 "wdisplays" # Quản lý multi display; cách dùng: wdisplays. Mẹo: Arrange screen. Conflicts: Không xung đột.
@@ -180,6 +209,7 @@ PKGS=(
 "waypipe" # Remote app Wayland (AUR); cách dùng: waypipe run command. Mẹo: SSH Wayland. Conflicts: Không xung đột.
 "wlr-randr" # Set display scale; cách dùng: wlr-randr --output eDP-1 --scale 1.5. Mẹo: Fractional scale. Conflicts: Không xung đột.
 "kanshi" # Quản lý profile màn hình động (bổ sung để tự động thay đổi cấu hình màn hình khi kết nối/disconnect external display); cách dùng: kanshi & trong hyprland.conf, chỉnh ~/.config/kanshi/config. Mẹo: Profile per display. Conflicts: Không xung đột.
+"wayland-protocols" # Protocols mở rộng cho Wayland; cách dùng: tự động cho dev. Mẹo: Build deps. Conflicts: Không xung đột.
 
 # GIẢI NÉN/ĐÓNG GÓI - Các gói nén và giải nén file. Mẹo: P7zip nhanh hơn zip. Conflicts: Unrar proprietary, nhưng cần cho rar.
 "unzip" # Giải nén .zip; cách dùng: unzip file.zip. Mẹo: -d dir. Conflicts: Không xung đột.
@@ -207,4 +237,7 @@ PKGS=(
 
 # POWER MANAGEMENT - Các gói quản lý năng lượng (bổ sung nhóm mới để hỗ trợ laptop, tiết kiệm pin và quản lý power). Mẹo: Tlp cho laptop. Conflicts: Tlp xung đột auto-cpufreq nếu dùng.
 "upower" # Dịch vụ power management (bổ sung để theo dõi pin, suspend/resume); cách dùng: tự động, upower -e để liệt kê devices. Mẹo: Integrate waybar. Conflicts: Không xung đột.
+
+# DISPLAY MANAGER - Các gói cho display manager để login vào Hyprland từ boot (bổ sung để chuyển từ minimal tty sang full desktop). Mẹo: Ly hỗ trợ Wayland tốt và lightweight. Conflicts: Xung đột nếu nhiều DM cài, chọn một.
+"ly" # Display manager lightweight TUI-based (ncurses-like); cách dùng: systemctl enable ly. Mẹo: Custom config in /etc/ly/config.ini for themes and sessions. Conflicts: Xung đột lightdm/gdm nếu enable cùng.
 )
