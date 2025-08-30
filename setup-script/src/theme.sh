@@ -97,43 +97,36 @@ EOF
 }
 
 auto_set_grub_theme() {
-  log INFO "Starting auto setup for GRUB CyberRe theme..."
+  log INFO "Starting auto setup for GRUB Vimix theme..."
+  Check and install git if not present
   if ! command -v git &>/dev/null; then
     log INFO "Installing git..."
     sudo pacman -Syu --noconfirm git &
-    pid=$!
+    local pid=$!
     spinner $pid "Installing git..."
     wait $pid || { log ERROR "Failed to install git!"; return 1; }
   fi
-  local theme_dir=$(sudo -u "$USER_NAME" mktemp -d /tmp/grub-theme-cyberre.XXXXXX) || { log ERROR "Failed to create temp dir!"; return 1; }
-  trap "rm -rf '$theme_dir'" RETURN
-  log INFO "Cloning GRUB CyberRe theme from AUR..."
-  sudo -u "$USER_NAME" git clone https://aur.archlinux.org/grub-theme-cyberre.git "$theme_dir" &
-  pid=$!
-  spinner $pid "Cloning theme repository..."
-  wait $pid || { log ERROR "Failed to clone!"; return 1; }
-  pushd "$theme_dir" >/dev/null || { log ERROR "Failed to cd!"; return 1; }
-  log INFO "Building theme..."
-  sudo -u "$USER_NAME" HOME="$USER_HOME" makepkg -s --noconfirm &
-  pid=$!
-  spinner $pid "Building theme..."
-  wait $pid || { log ERROR "Failed to build!"; popd >/dev/null; return 1; }
-  log INFO "Refreshing sudo credentials..."
-  sudo -v
-  log INFO "Installing built theme..."
-  sudo pacman -U --noconfirm *.pkg.tar.zst &
-  pid=$!
-  spinner $pid "Installing theme..."
-  wait $pid || { log ERROR "Failed to install!"; popd >/dev/null; return 1; }
+  Clone and install GRUB Vimix theme
+  log INFO "Cloning and installing GRUB Vimix theme..."
+  Prepare temporary directory using mktemp for safety
+  local grub_dir
+  grub_dir=$(mktemp -d /tmp/grub2-themes.XXXXXX) || { log ERROR "Failed to create temporary directory for GRUB themes!"; return 1; }
+  trap "rm -rf '$grub_dir'" RETURN # Ensure cleanup on function return
+  Clone the repo (as root since install requires sudo)
+  git clone https://github.com/vinceliuice/grub2-themes.git "$grub_dir" &
+  local pid=$!
+  spinner $pid "Cloning GRUB themes repository..."
+  wait $pid || { log ERROR "Failed to clone GRUB themes repository!"; return 1; }
+  Change into the directory
+  pushd "$grub_dir" >/dev/null || { log ERROR "Failed to change directory to $grub_dir!"; return 1; }
+  Install the theme with sudo
+  sudo ./install.sh -t vimix -i color -s 1080p &
+  local pid=$!
+  spinner $pid "Installing GRUB Vimix theme..."
+  wait $pid || { log ERROR "Failed to install GRUB Vimix theme!"; popd >/dev/null; return 1; }
+  Exit directory
   popd >/dev/null
-  log INFO "Configuring GRUB to use CyberRe theme..."
-  sudo sed -i '/^GRUB_THEME=/d' /etc/default/grub
-  echo 'GRUB_THEME="/usr/share/grub/themes/cyberre/theme.txt"' | sudo tee -a /etc/default/grub >/dev/null
-  sudo grub-mkconfig -o /boot/grub/grub.cfg &
-  pid=$!
-  spinner $pid "Updating GRUB config..."
-  wait $pid || { log ERROR "Failed to update GRUB!"; return 1; }
-  log SUCCESS "GRUB CyberRe theme installed! Reboot to apply."
+  log SUCCESS "GRUB Vimix theme installed! Reboot to apply."
   return 0
 }
 
